@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['line', 'corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+
+            var chartDiv = document.getElementById('chart_div');
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('datetime', 'time');
+            data.addColumn('number', "Heart Rate");
+            data.addColumn('number', "Body Temperature");
+            
+            var analysis = JSON.parse({{ analysis | tojson }});
+	    var list1 = analysis.raw;
+	    var heart_rate_avg = analysis.heart_rate_avg;
+	    var temp_avg = analysis.temp_avg;
+	    console.log("Hello world!");
+            // document.getElementById("hr_avg").innerHTML = heart_rate_avg;
+	    for (var i = 0; i < list1.length; i++) {
+                list1[i][0] = new Date(list1[i][0]);
+            }
+            // [
+            //     [new Date(1654173450895),  -.5,  5.7],
+            //     [new Date(1654174451895),   .4,  8.7],
+            //     [new Date(1654175452895),   .5,   12],
+            //     [new Date(1654176453895),  2.9, 15.3],
+            //     [new Date(1654177454895),  6.3, 18.6],
+            //     [new Date(1654178455895),    9, 20.9],
+            //     [new Date(1654179456895), 10.6, 19.8],
+            //     [new Date(1654183457895), -.2,  4.5]
+            // ]
+            data.addRows(list1);
+
+            var materialOptions = {
+                chart: {
+                    title: 'heart rate and body temperature tracking of your sleep session'
+                },
+                width: 900,
+                height: 500,
+                series: {
+                    // Gives each series an axis name that matches the Y-axis below.
+                    0: {axis: 'HeartRate'},
+                    1: {axis: 'Temps'}
+                },
+                axes: {
+                    // Adds labels to each axis; they don't have to match the axis names.
+                    y: {
+                        HeartRate: {label: 'Heart Rate (bpm)'},
+                        Temps: {label: 'Temps (Celsius)'}
+                    }
+                }
+            };
+
+            function drawMaterialChart() {
+                var materialChart = new google.charts.Line(chartDiv);
+                materialChart.draw(data, materialOptions);
+            }
+
+            drawMaterialChart();
+
+        }
+    </script>
+</head>
+<div id="chart_div"></div>
+
+<div>
+	<p style="padding: 5%">Your average heart rate is <script>console.log("Hello world!");document.write(heart_rate_avg);</script> bpm</p>
+	<p style="padding: 5%">Your average body temperature is <script>console.log("Hello world!");document.write(temp_avg);</script> bpm</p>
+</div>
+</html>
+
